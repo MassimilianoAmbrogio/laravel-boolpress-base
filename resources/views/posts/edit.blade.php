@@ -41,7 +41,7 @@
             </div>
 
             <div class="form-group">
-                <input class="btn btn-dark" type="submit" value="Update post">
+                <input class="btn btn-primary" type="submit" value="Update post">
             </div>
         </form>
     </div>
