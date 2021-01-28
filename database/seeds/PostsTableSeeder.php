@@ -15,7 +15,7 @@ class PostsTableSeeder extends Seeder
     public function run(Faker $faker)
     {
         // SOLO SE RICHIESTO (rimuove tutti i record precedenti della tabella)
-        Post::truncate();
+        // Post::truncate();
 
         /**
          * FAKER
