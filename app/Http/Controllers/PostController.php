@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Post;
+use App\InfoPost;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -60,7 +61,14 @@ class PostController extends Controller
         $newPost->fill($data); // $fillable Model
         $saved = $newPost->save();
 
-        if($saved) {
+        // <------ InfoPost record 
+        $data['post_id'] = $newPost->id; // FK
+        $newInfo = new InfoPost();
+        $newInfo->fill($data);
+        $infoSaved = $newInfo->save();
+
+
+        if($saved && $infoSaved) {
             return redirect()->route('posts.index');
         } else {
             return redirect()->route('homepage');
@@ -138,7 +146,12 @@ class PostController extends Controller
         // UPDATE DB
         $updated = $post->update($data); // <-- $fillable nel Model
 
-        if ($updated) {
+        //<----- Info table update 
+        $data['post_id'] = $post->id; // FK
+        $info = InfoPost::where('post_id', $post->id)->first();
+        $infoUpdate = $info->update($data); // <-- $fillable nel Model
+
+        if ($updated && $infoUpdate) {
             return redirect()->route('posts.show', $post->slug);
         } else {
             return redirect()->route('homepage');

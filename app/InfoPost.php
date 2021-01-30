@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class InfoPost extends Model
 {
     /**
+     * MASS ASSIGN
+     */
+    protected $fillable = [
+        'post_id',
+        'post_status',
+        'comment_status'
+    ];
+
+    /**
      * Laravel non gestire date create e update_at
      * Indicates if the model should be timestamped.
      *
