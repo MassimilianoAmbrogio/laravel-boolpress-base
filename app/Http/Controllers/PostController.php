@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Post;
 use App\InfoPost;
+use App\Tag;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,7 +30,10 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        // Get all tags
+        $tags = Tag::all();
+
+        return view('posts.create', compact('tags'));
     }
 
     /**
@@ -42,7 +46,7 @@ class PostController extends Controller
     {
         // GET FORM DATA
         $data = $request->all();
-        // dump($data);
+        // dd($data);
 
         // VALIDATION
         $request->validate($this->ruleValidation());
@@ -69,6 +73,9 @@ class PostController extends Controller
 
 
         if($saved && $infoSaved) {
+            if(!empty($data['tags'])) {
+                $newPost->tags()->attach($data['tags']);
+            }
             return redirect()->route('posts.index');
         } else {
             return redirect()->route('homepage');
@@ -103,12 +110,13 @@ class PostController extends Controller
     public function edit($slug)
     {
         $post = Post::where('slug', $slug)->first();
+        $tags = Tag::all();
 
         if(empty($post)) {
             abort(404);
         }
 
-        return view('posts.edit', compact('post'));
+        return view('posts.edit', compact('post', 'tags'));
     }
 
     /**
@@ -152,6 +160,12 @@ class PostController extends Controller
         $infoUpdate = $info->update($data); // <-- $fillable nel Model
 
         if ($updated && $infoUpdate) {
+            if(!empty($data['tags'])) {
+                $post->tags()->sync($data['tags']);
+            } else {
+                $post->tags()->detach();
+            }
+
             return redirect()->route('posts.show', $post->slug);
         } else {
             return redirect()->route('homepage');
@@ -170,6 +184,8 @@ class PostController extends Controller
 
         $title = $post->title;
         $image = $post->path_img;
+
+        $post->tags()->detach();
         $deleted = $post->delete();
 
         if ($deleted) {
